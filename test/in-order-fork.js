@@ -1,6 +1,7 @@
 var test = require('tape')
 var memdb = require('memdb')
 var ram = require('random-access-memory')
+var concatMap = require('concat-map')
 var umbkd = require('../')
 
 test('in-order fork', function (t) {
@@ -8,8 +9,13 @@ test('in-order fork', function (t) {
   var db = memdb({ valueEncoding: 'json' })
   var bkd = umbkd({
     storage: function (name, cb) { cb(null, ram()) },
+    isLinked: function (id, cb) {
+      db.get('link!' + id, function (err, value) {
+        cb(null, value !== undefined)
+      })
+    },
     getPoint: function (key, cb) {
-      db.get(key, function (err, doc) {
+      db.get('doc!' + key, function (err, doc) {
         if (err) cb(err)
         else cb(null, { point: doc.point, value: [doc.id] })
       })
@@ -28,13 +34,23 @@ test('in-order fork', function (t) {
     { id: 2, links: [1], point: [-155.0,19.5] },
     { id: 3, links: [1], point: [-155.1,19.7] }
   ]
-  db.batch(docs.map(function (doc) {
-    return {
-      type: 'put',
-      key: doc.id,
-      value: { id: doc.id, point: doc.point }
-    }
-  }), function (err) {
+  db.batch(concatMap(docs, function (doc) {
+    return [
+      {
+        type: 'put',
+        key: 'doc!' + doc.id,
+        value: { id: doc.id, point: doc.point }
+      }
+    ].concat(doc.links.map(function (link) {
+      return {
+        type: 'put',
+        key: 'link!' + link,
+        value: ''
+      }
+    }))
+  }), onbatch)
+
+  function onbatch (err) {
     t.error(err)
     bkd.batch(docs, function (err) {
       t.error(err)
@@ -57,5 +73,5 @@ test('in-order fork', function (t) {
         ])
       })
     })
-  })
+  }
 })
