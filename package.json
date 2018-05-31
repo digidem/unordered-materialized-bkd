@@ -1,0 +1,13 @@
+{
+  "name": "unordered-materialized-bkd",
+  "version": "1.0.0",
+  "description": "materialized view spatial tree based on unordered log messages",
+  "dependencies": {
+    "bkd-tree": "^1.0.1",
+    "once": "^1.4.0"
+  },
+  "scripts": {
+    "test": "tape test/*.js"
+  },
+  "license": "BSD"
+}

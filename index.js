@@ -6,10 +6,8 @@ module.exports = MBKD
 function MBKD (opts) {
   if (!(this instanceof MBKD)) return new MBKD(opts)
   this.storage = opts.storage
-  this._getId = opts.getId
   this._getPoint = opts.getPoint
   this._isLinked = opts.isLinked
-  this.kv = opts.kv
   this.bkd = new BKD(this.storage, {
     type: opts.type,
     branchFactor: opts.branchFactor,
