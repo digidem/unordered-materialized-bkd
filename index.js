@@ -42,7 +42,7 @@ MBKD.prototype.batch = function (rows, cb) {
         ops.push({
           type: 'insert',
           point: row.point,
-          value: [row.id]
+          value: Array.isArray(row.id) ? row.id : [row.id]
         })
       }
       if (--pending === 0) done()
@@ -56,7 +56,7 @@ MBKD.prototype.batch = function (rows, cb) {
 }
 
 MBKD.prototype.query = function (bbox, cb) {
-  this.bkd.query(bbox, cb)
+  return this.bkd.query(bbox, cb)
 }
 
 function noop () {}
