@@ -205,13 +205,17 @@ Write an array of `rows` into the `bkd`. Each `row` in the `rows` array has:
 * `row.point` - spatial coordinate array
 * `row.links` - array of document ids that this document supercedes
 
+## var stream = bkd.query(bbox)
 ## bkd.query(bbox, cb)
 
-Search for records as `cb(err, results)` in a bounding box `bbox`.
+Search for records inside the bounding box `bbox` either by read a
+[pull-stream][] stream or as an array of results in `cb(err, results)`.
 
 The `bbox` should contain all the minimum values for each dimension followed by
 all the maximum values for each dimension. In 2d, the bbox is
 `[minX,minY,maxX,maxY]`, or the more familiar `[west,south,east,north]`.
+
+[pull-stream]: https://pull-stream.github.io/
 
 # install
 
