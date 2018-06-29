@@ -27,11 +27,13 @@ MBKD.prototype.batch = function (rows, cb) {
       pending++
       self._getPoint(link, function (err, pt) {
         if (err) return cb(err)
-        ops.push({
-          type: 'delete',
-          point: pt.point,
-          value: pt.value
-        })
+        if (pt) {
+          ops.push({
+            type: 'delete',
+            point: pt.point,
+            value: pt.value
+          })
+        }
         if (--pending === 0) done()
       })
     })
@@ -40,7 +42,7 @@ MBKD.prototype.batch = function (rows, cb) {
       if (err) return cb(err)
       if (!ex) {
         ops.push({
-          type: 'insert',
+          type: row.type === 'delete' ? 'delete' : 'insert',
           point: row.point,
           value: Array.isArray(row.id) ? row.id : [row.id]
         })
